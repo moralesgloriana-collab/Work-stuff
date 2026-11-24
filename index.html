@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InDesign Naming Conventions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: fixed 1280x720 stage scaled to the window; dark "InDesign workspace" world, single theme */
+  --bg:#121419; --stage:#181b21; --panel:#22262e; --panel-2:#2b3039; --line:#343a45;
+  --ink:#eef0f4; --muted:#9aa2b1; --accent:#ff4f8b; --accent-soft:rgba(255,79,139,.14);
+  --ok:#51cf66; --bad:#ff6b6b; --warn:#fcc419;
+  --c-notes:#e03131; --c-int:#d6336c; --c-anim:#f08c00; --c-copy:#339af0; --c-img:#40c057; --c-gfx:#fab005; --c-bg:#868e96; --c-guide:#22b8cf;
+  --display:"Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:var(--display);overflow:hidden}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code,.mono{font-family:var(--mono);font-size:.92em}
+code{background:var(--panel-2);padding:1px 6px;border-radius:4px;color:#ffd8e6}
+
+#viewport{position:fixed;inset:0 0 56px 0;display:grid;place-items:center}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--stage);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden}
+.slide{position:absolute;inset:0;padding:56px 72px 48px;display:none;flex-direction:column}
+.slide.active{display:flex;animation:in .35s ease}
+@keyframes in{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide.active{animation:none}*{transition:none!important;animation:none!important}}
+
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+h1{font-size:64px;line-height:1.02;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:38px;line-height:1.1;margin:0 0 10px;letter-spacing:-.01em;text-wrap:balance}
+.lead{font-size:19px;color:var(--muted);max-width:62ch;margin:0 0 24px;line-height:1.45}
+.row{display:flex;gap:28px;flex:1;min-height:0}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.hint{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.hint:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+ul.clean{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;font-size:17px;line-height:1.4}
+ul.clean li{padding-left:18px;position:relative}
+ul.clean li:before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;background:var(--accent);border-radius:2px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;padding:6px 10px;border-bottom:1px solid var(--line)}
+td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
+
+/* title slide */
+.title-slide{justify-content:center;background:radial-gradient(900px 500px at 85% 70%,rgba(255,79,139,.10),transparent 60%)}
+.title-slide .lead{font-size:21px;margin-top:22px;max-width:560px}
+#coverStack{position:absolute;right:10px;top:150px}
+.kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 7px;font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel)}
+
+/* anatomy */
+.anatomy{font-family:var(--mono);font-size:64px;display:flex;justify-content:center;gap:0;margin:30px 0 18px}
+.seg{padding:6px 4px;border-radius:8px;cursor:pointer;transition:background .2s}
+.seg.p{color:var(--accent)}.seg.d{color:var(--c-copy)}.seg.v{color:var(--c-img)}.sep{color:#59606c}
+.seg:hover,.seg.on{background:var(--panel-2)}
+.anat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.anat-cards .card{transition:border-color .2s, transform .2s}
+.anat-cards .card.on{transform:translateY(-3px)}
+.anat-cards h3{margin:0 0 6px;font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+.anat-cards p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+
+/* rules grid */
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;font-size:16px;line-height:1.4}
+.rule{display:flex;gap:12px;align-items:flex-start}
+.rule b{font-family:var(--mono);color:var(--accent);font-size:13px;margin-top:3px}
+.prefixes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pfx{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--muted)}
+.pfx code{display:block;font-size:14px;margin-bottom:2px;background:none;padding:0;color:var(--ink)}
+
+/* layers panel */
+.idpanel{background:#2b2d31;border-radius:10px;overflow:hidden;font-size:14px;width:380px;border:1px solid #1b1c1f}
+.idpanel .bar{background:#1f2023;padding:8px 12px;font-weight:600;font-size:13px;display:flex;justify-content:space-between}
+.lrow{display:flex;align-items:center;gap:10px;padding:0 12px;height:34px;cursor:pointer;border-top:1px solid #26282c;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
+.lrow:hover{background:#33363b}
+.lrow.sel{background:#3b4f6b}
+.lrow .eye{width:16px;color:#d0d4da;font-size:12px}
+.lrow .eye.off{color:#5c5f66}
+.lrow .lock{width:14px;color:#9aa2b1;font-size:11px}
+.lrow .chip{width:11px;height:11px;border-radius:2px}
+.lrow .nm{font-family:var(--mono);font-size:13px}
+.lrow.hidden .nm{color:#7a808a;font-style:italic}
+.lrow .tag{margin-left:auto;font-size:11px;color:#7a808a}
+.lchild{padding-left:68px;font-family:var(--mono);font-size:12.5px;color:#c9ced6;height:26px;display:flex;align-items:center;background:#30333a;border-top:1px solid #26282c}
+.ldetail h3{margin:0 0 4px;font-family:var(--mono);font-size:22px}
+.ldetail .meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.pill{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--panel-2);color:var(--ink);border:1px solid var(--line)}
+.pill.ok{border-color:rgba(81,207,102,.5);color:#8ce99a}.pill.no{border-color:rgba(255,107,107,.5);color:#ffa8a8}
+.ldetail p{margin:0 0 8px;font-size:16px;line-height:1.45;color:#d3d7de}
+
+/* good/bad */
+.gb{display:flex;flex-wrap:wrap;gap:8px}
+.gb span{font-family:var(--mono);font-size:14px;padding:6px 10px;border-radius:6px}
+.gb.good span{background:rgba(81,207,102,.12);color:#8ce99a;border:1px solid rgba(81,207,102,.3)}
+.gb.bad span{background:rgba(255,107,107,.1);color:#ffa8a8;border:1px solid rgba(255,107,107,.3);text-decoration:line-through;text-decoration-color:rgba(255,107,107,.6)}
+
+/* object card demo */
+.objdemo{display:flex;gap:34px;align-items:center}
+.mockcard{width:300px;background:#fff;border-radius:14px;padding:14px;color:#1b1d22;position:relative}
+.mockcard .hl{outline:3px solid transparent;outline-offset:3px;border-radius:6px;transition:outline-color .15s}
+.mockcard .hl.on{outline-color:var(--hc)}
+.mockcard .ph{height:130px;border-radius:8px;background:linear-gradient(160deg,#d3f9d8,#8ce99a);position:relative;overflow:hidden}
+.mockcard .ph:after{content:"";position:absolute;left:30px;bottom:-30px;width:140px;height:110px;background:#40c057;transform:rotate(45deg);opacity:.6}
+.mockcard .nm{font-size:19px;font-weight:700;margin:12px 0 4px}
+.mockcard .bio{font-size:13px;color:#495057;line-height:1.4}
+.mockcard .btn{display:inline-block;margin-top:10px;background:var(--c-int);color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px}
+.objlist{display:flex;flex-direction:column;gap:6px;flex:1}
+.objitem{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:8px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-family:var(--mono);font-size:15px;text-align:left;width:100%}
+.objitem small{font-family:var(--display);color:var(--muted);font-size:12.5px;margin-left:auto}
+.objitem.child{margin-left:28px;width:calc(100% - 28px)}
+.objitem:hover,.objitem.on{border-color:var(--hc);background:var(--panel-2)}
+.objitem i{width:10px;height:10px;border-radius:2px;background:var(--hc);flex:none}
+
+/* button demo */
+.faq{background:#fff;color:#1b1d22;border-radius:14px;padding:20px;width:440px}
+.faq h4{margin:0 0 12px;font-size:16px}
+.faq .q{display:flex;gap:10px;align-items:center}
+.faq .q span{flex:1;background:#f1f3f5;padding:10px 12px;border-radius:8px;font-size:14px}
+.idbtn{background:var(--c-int);color:#fff;border:0;border-radius:99px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:background .15s, transform .1s}
+.idbtn:hover{background:#e64980}.idbtn:active{background:#a61e4d;transform:scale(.97)}
+.answer{margin-top:12px;border:2px dashed #339af0;border-radius:8px;padding:12px;font-size:14px;line-height:1.45;color:#1864ab;background:#e7f5ff;transition:opacity .25s}
+.answer.hide{opacity:.18}
+.pairmap{font-family:var(--mono);font-size:17px;line-height:1.9}
+.pairmap .k{color:var(--muted);font-family:var(--display);font-size:13px;display:block;line-height:1.2;margin-top:8px}
+.pairmap mark{background:rgba(255,212,59,.18);color:#ffe066;border-radius:3px;padding:0 2px}
+.states{display:flex;gap:8px;margin-top:4px}
+.states span{font-size:12px;padding:5px 12px;border-radius:99px;color:#fff}
+
+/* animation demo */
+.timing{background:#2b2d31;border-radius:10px;width:420px;overflow:hidden;border:1px solid #1b1c1f}
+.timing .bar{background:#1f2023;padding:8px 12px;font-weight:600;font-size:13px}
+.timing .ev{font-size:12px;color:#9aa2b1;padding:8px 12px 4px}
+.trow{font-family:var(--mono);font-size:13px;padding:7px 12px;border-left:3px solid transparent;transition:background .2s,border-color .2s}
+.trow.on{background:#3b4f6b;border-left-color:var(--c-anim)}
+.trow.grp{display:flex;flex-direction:column;gap:2px}
+.animstage{flex:1;background:#fff;border-radius:14px;color:#1b1d22;padding:28px;position:relative;overflow:hidden;min-height:300px}
+.a-el{opacity:0}
+.animstage.play .a1{animation:fadeIn .5s ease forwards}
+.animstage.play .a2{animation:flyUp .5s ease .5s forwards}
+.animstage.play .a3{animation:fadeIn .5s ease 1s forwards}
+.animstage.play .a4{animation:fadeIn .5s ease 1s forwards}
+.animstage.done .a-el{opacity:1}
+@keyframes fadeIn{to{opacity:1}}
+@keyframes flyUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+.animstage .t{font-size:34px;font-weight:700;letter-spacing:-.01em}
+.animstage .s{font-size:16px;color:#495057;margin-top:6px}
+.animstage .cards{display:flex;gap:14px;margin-top:26px}
+.animstage .c{flex:1;height:96px;border-radius:10px;background:#fff4e6;border:2px solid #ffc078;padding:12px;font-size:12px;font-family:var(--mono);color:#d9480f}
+.animstage .tag{position:absolute;font-family:var(--mono);font-size:11px;color:#d9480f;background:#fff4e6;padding:2px 6px;border-radius:4px}
+.ctrl{display:flex;gap:10px;align-items:center}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
+.btn.ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--ink)}
+.btn:hover{filter:brightness(1.1)}
+
+/* styles tree */
+.tree{display:flex;flex-direction:column;align-items:center;gap:18px;position:relative}
+.tlevel{display:flex;gap:14px;justify-content:center}
+.node{font-family:var(--mono);font-size:14px;padding:8px 14px;border-radius:8px;border:1px solid var(--c-copy);background:rgba(51,154,240,.1);cursor:pointer;transition:all .15s}
+.node.root{background:var(--ink);color:#121419;border-color:var(--ink)}
+.node.lit{background:var(--c-copy);color:#fff;box-shadow:0 0 0 4px rgba(51,154,240,.25)}
+.node.root.lit{background:#fff;color:#121419}
+.typesample{background:#fff;color:#1b1d22;border-radius:10px;padding:16px 18px;font-size:15px;line-height:1.5;min-height:120px}
+.stylegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stylegrid .card{padding:12px 14px}
+.stylegrid h4{margin:0 0 4px;font-size:13px;color:var(--muted);font-weight:500}
+.stylegrid .p{font-family:var(--mono);font-size:20px;color:var(--accent)}
+.stylegrid .ex{font-family:var(--mono);font-size:12.5px;color:#c9ced6;margin-top:4px}
+.sw{display:flex;gap:14px}
+.sw div{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:12px;color:#c9ced6}
+.sw i{width:100%;height:46px;border-radius:8px;display:block}
+
+/* files */
+.tree-files{font-family:var(--mono);font-size:15px;line-height:1.85;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;white-space:pre;color:#c9ced6}
+.tree-files b{color:var(--ink)}.tree-files .i{color:var(--c-copy)}.tree-files .e{color:var(--c-img)}
+.fname{font-family:var(--mono);font-size:26px;display:flex;flex-wrap:wrap;gap:2px;margin:6px 0 16px}
+.fname span{padding:4px 6px;border-radius:6px;background:var(--panel)}
+.fname small{display:block;font-family:var(--display);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* builder */
+.tool{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;flex:1;min-height:0}
+.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+.field select,.field input{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--ink);font-family:var(--mono);font-size:14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.out{font-family:var(--mono);font-size:26px;background:#0f1115;border:1px solid var(--line);border-radius:10px;padding:16px 18px;word-break:break-all;min-height:68px;color:#ffd8e6}
+.checks{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.checks li{display:flex;gap:8px;align-items:flex-start}
+.checks .s{width:18px;flex:none;font-weight:700}
+.checks .pass .s{color:var(--ok)}.checks .fail .s{color:var(--bad)}.checks .fail{color:#ffc9c9}
+.verdict{font-size:14px;font-weight:600;padding:4px 12px;border-radius:99px;display:inline-block}
+.verdict.ok{background:rgba(81,207,102,.15);color:#8ce99a}.verdict.no{background:rgba(255,107,107,.15);color:#ffa8a8}
+
+/* checklist */
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:8px 22px}
+.qa label{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:15px;line-height:1.35;cursor:pointer}
+.qa input{width:18px;height:18px;accent-color:var(--accent);margin-top:1px;flex:none}
+.qa label:has(input:checked){border-color:rgba(81,207,102,.45);color:var(--muted)}
+.progress{height:8px;background:var(--panel-2);border-radius:99px;overflow:hidden;flex:1}
+.progress i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+
+/* quick ref */
+.qr td:first-child{color:var(--muted);font-size:14px;white-space:nowrap}
+.qr td{padding:6px 10px;font-size:14px}
+.qr code{background:none;padding:0}
+.qr td:nth-child(3) code{color:#a5d8ff}
+
+/* nav */
+#nav{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;align-items:center;gap:14px;padding:0 20px;border-top:1px solid #1f232a;background:#0e1014}
+#nav .navbtn{background:var(--panel);border:1px solid var(--line);border-radius:8px;width:38px;height:34px;cursor:pointer;font-size:16px}
+#nav .navbtn:disabled{opacity:.35;cursor:default}
+#dots{display:flex;gap:6px;flex:1;justify-content:center;flex-wrap:wrap}
+#dots button{width:26px;height:6px;border-radius:99px;border:0;background:#2e333c;cursor:pointer;padding:0}
+#dots button.on{background:var(--accent)}
+#dots button:hover{background:#4a515d}
+#dots button.on:hover{background:var(--accent)}
+#count{font-family:var(--mono);font-size:13px;color:var(--muted);min-width:64px;text-align:right}
+#slideTitle{font-size:13px;color:var(--muted);min-width:200px}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- 1 TITLE -->
+<section class="slide title-slide" data-title="Cover">
+  <div class="eyebrow">Production standard · Adobe InDesign</div>
+  <h1>Naming conventions<br>&amp; file structure</h1>
+  <p class="lead">One shared system for layers, objects, buttons, animations, styles and files. Anyone can open any INDD and know what everything is, where it lives and what it does.</p>
+  <p class="hint">Use <span class="kbd">←</span> <span class="kbd">→</span> or the bar below to move between slides. Most slides respond to clicks.</p>
+  <svg id="coverStack" width="440" height="520" viewBox="-220 -200 440 520" aria-hidden="true"></svg>
+</section>
+
+<!-- 2 PATTERN -->
+<section class="slide" data-title="The pattern">
+  <div class="eyebrow">01 · Core pattern</div>
+  <h2>Every name has three parts</h2>
+  <p class="lead">Underscores separate the parts. Hyphens join the words inside a part. Hover or click a part to see what it carries.</p>
+  <div class="anatomy" role="group" aria-label="Name anatomy">
+    <button class="seg p" data-k="p" style="border:0;background:none;font:inherit;color:var(--accent)">btn</button><span class="sep">_</span><button class="seg d" data-k="d" style="border:0;background:none;font:inherit;color:var(--c-copy)">nav-next</button><span class="sep">_</span><button class="seg v" data-k="v" style="border:0;background:none;font:inherit;color:var(--c-img)">p12</button>
+  </div>
+  <div class="anat-cards">
+    <div class="card" data-k="p"><h3 style="color:var(--accent)">Prefix</h3><p>What the item is. <code>btn_</code> button, <code>txt_</code> text frame, <code>anim_</code> animation, <code>p_</code> paragraph style.</p></div>
+    <div class="card" data-k="d"><h3 style="color:var(--c-copy)">Descriptor</h3><p>What it does or shows, by meaning not position. <code>nav-next</code>, <code>hero-team</code>, <code>faq-answer-03</code>.</p></div>
+    <div class="card" data-k="v"><h3 style="color:var(--c-img)">Variant</h3><p>Where it is or which one. Page <code>p12</code>, section <code>sec-faq</code>, order <code>01</code>, language <code>es</code>.</p></div>
+  </div>
+</section>
+
+<!-- 3 RULES -->
+<section class="slide" data-title="Core rules">
+  <div class="eyebrow">01 · Core rules</div>
+  <h2>Eight rules that apply everywhere</h2>
+  <div class="row" style="margin-top:14px">
+    <div class="col" style="flex:1.15">
+      <div class="rules">
+        <div class="rule"><b>01</b><span><strong>lowercase</strong> for objects, styles, buttons, animations. UPPERCASE only for layers.</span></div>
+        <div class="rule"><b>02</b><span>Only <code>a–z 0–9 _ -</code>. No spaces, accents (ñ, á) or <code>&amp; / # . ( )</code>.</span></div>
+        <div class="rule"><b>03</b><span><strong>Start with a letter.</strong> Numbered layers are the only exception.</span></div>
+        <div class="rule"><b>04</b><span><strong>Zero-pad numbers:</strong> <code>01</code>…<code>10</code>. Pages <code>p01</code>, spreads <code>s01</code>.</span></div>
+        <div class="rule"><b>05</b><span><strong>Describe meaning,</strong> not position: <code>img_hero-team</code>, not <code>img_top-left</code>.</span></div>
+        <div class="rule"><b>06</b><span><strong>No temporary words:</strong> <code>final</code>, <code>new</code>, <code>copy</code>, <code>test</code>, names.</span></div>
+        <div class="rule"><b>07</b><span><strong>Language last</strong> on multilingual jobs: <code>_en</code>, <code>_es</code>.</span></div>
+        <div class="rule"><b>08</b><span><strong>Under 30 characters.</strong> The Layers panel truncates.</span></div>
+      </div>
+      <div class="card" style="margin-top:6px;font-size:15px;color:var(--muted);line-height:1.45">Why so strict? InDesign turns object and style names into IDs and CSS classes on EPUB, HTML and interactive-PDF export. Spaces and symbols break them.</div>
+    </div>
+    <div class="col">
+      <div class="hint" style="margin-bottom:2px">Prefix master list</div>
+      <div class="prefixes">
+        <div class="pfx"><code>txt_</code>Text frame</div><div class="pfx"><code>img_</code>Image frame</div>
+        <div class="pfx"><code>shp_</code>Shape, rule</div><div class="pfx"><code>grp_</code>Group</div>
+        <div class="pfx"><code>btn_</code>Button</div><div class="pfx"><code>hot_</code>Hotspot</div>
+        <div class="pfx"><code>fld_</code>Form field</div><div class="pfx"><code>mso_</code>Multi-state</div>
+        <div class="pfx"><code>anim_</code>Animation</div><div class="pfx"><code>vid_</code>Video</div>
+        <div class="pfx"><code>aud_</code>Audio</div><div class="pfx"><code>ph_</code>Placeholder</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 LAYERS -->
+<section class="slide" data-title="Layer structure">
+  <div class="eyebrow">02 · Layer structure</div>
+  <h2>Copy, images and interactions each get a layer</h2>
+  <p class="lead" style="margin-bottom:18px">Every document uses the same layer set, front to back (shown here with a second language). Click a layer to see what belongs on it.</p>
+  <div class="row">
+    <div class="idpanel" role="listbox" aria-label="Layers panel">
+      <div class="bar"><span>Layers</span><span>≡</span></div>
+      <div id="layerRows"></div>
+    </div>
+    <div class="col">
+      <div class="card ldetail" id="layerDetail" style="flex:1"></div>
+      <div class="card" style="font-size:14.5px;color:var(--muted);line-height:1.45;padding:12px 16px"><strong style="color:var(--ink)">Interactions on top:</strong> InDesign only registers clicks on the topmost object. <strong style="color:var(--ink)">Steps of 10</strong> leave room to insert layers like <code>35_COPY-LEGAL</code>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 LAYER NAMING -->
+<section class="slide" data-title="Layer naming">
+  <div class="eyebrow">03 · Layer naming</div>
+  <h2><code style="font-size:34px;background:none;padding:0;color:var(--ink)">NN_CONTENT-TYPE_SUFFIX</code></h2>
+  <p class="lead">A two-digit order number, the content type in UPPERCASE, and an optional language or output variant.</p>
+  <div class="row">
+    <div class="col">
+      <table>
+        <tr><th>Part</th><th>Rule</th><th>Examples</th></tr>
+        <tr><td><code>NN</code></td><td>Two digits, steps of 10, matches stacking order</td><td><code>10</code> <code>30</code> <code>35</code></td></tr>
+        <tr><td><code>TYPE</code></td><td>Standard type, hyphenate if specialized</td><td><code>COPY</code> <code>COPY-LEGAL</code></td></tr>
+        <tr><td><code>_SUFFIX</code></td><td>Language or output (optional)</td><td><code>_EN</code> <code>_ES</code> <code>_PRINT</code> <code>_DIGITAL</code></td></tr>
+      </table>
+      <div class="card" style="font-size:15px;line-height:1.5;color:#d3d7de;margin-top:6px"><strong>Multilingual:</strong> one copy layer per language, <code>30_COPY_EN</code> and <code>31_COPY_ES</code>, one visible at a time.<br><strong>Print + digital in one file:</strong> <code>10_INTERACTIONS_DIGITAL</code>, <code>30_COPY-CTA_PRINT</code>. Hide the other set at export.</div>
+    </div>
+    <div class="col" style="flex:.8">
+      <div class="hint">Use</div>
+      <div class="gb good"><span>30_COPY_EN</span><span>35_COPY-LEGAL</span><span>41_IMAGES_ES</span><span>55_GRAPHICS-ICONS</span></div>
+      <div class="hint" style="margin-top:10px">Never</div>
+      <div class="gb bad"><span>Layer 1</span><span>text</span><span>Images new</span><span>copy maria</span><span>Fotos (final)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 OBJECTS -->
+<section class="slide" data-title="Object naming">
+  <div class="eyebrow">04 · Object naming</div>
+  <h2>Name the group as a unit, its children by role</h2>
+  <p class="lead">Name anything interactive, animated, targeted by another object, or a placeholder. Hover a name to find it on the card.</p>
+  <div class="objdemo">
+    <div class="mockcard hl" data-o="grp" style="--hc:#f1f3f5">
+      <div class="ph hl" data-o="img" style="--hc:var(--c-img)"></div>
+      <div class="nm hl" data-o="name" style="--hc:var(--c-copy)">Ana Rojas</div>
+      <div class="bio hl" data-o="bio" style="--hc:var(--c-copy)">Senior production artist. Builds interactive catalogs and keeps the layer panel tidy.</div>
+      <div class="btn hl" data-o="btn" style="--hc:var(--c-int)">Learn more</div>
+    </div>
+    <div class="objlist">
+      <button class="objitem" data-o="grp" style="--hc:#dee2e6"><i></i>grp_card-team-01<small>whole card · repeat index 01</small></button>
+      <button class="objitem child" data-o="img" style="--hc:var(--c-img)"><i></i>img_card-photo<small>on 40_IMAGES</small></button>
+      <button class="objitem child" data-o="name" style="--hc:var(--c-copy)"><i></i>txt_card-name<small>on 30_COPY</small></button>
+      <button class="objitem child" data-o="bio" style="--hc:var(--c-copy)"><i></i>txt_card-bio<small>on 30_COPY</small></button>
+      <button class="objitem child" data-o="btn" style="--hc:var(--c-int)"><i></i>btn_show-bio-01_p05<small>on 10_INTERACTIONS</small></button>
+      <p style="font-size:14px;color:var(--muted);margin:8px 0 0">Placeholders get <code>ph_</code> so QA can search for them. Keep groups to three levels deep at most.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 BUTTONS -->
+<section class="slide" data-title="Buttons">
+  <div class="eyebrow">05 · Buttons</div>
+  <h2><code style="font-size:32px;background:none;padding:0;color:var(--ink)">btn_[action]-[target]_[location]</code></h2>
+  <p class="lead">A builder should know the behaviour from the name alone. Try the button.</p>
+  <div class="row">
+    <div class="col" style="flex:none;width:460px">
+      <div class="faq">
+        <h4>FAQ</h4>
+        <div class="q"><span>3. How do I return an item?</span><button class="idbtn" id="faqBtn" aria-controls="faqAns" aria-expanded="false">Show</button></div>
+        <div class="answer hide" id="faqAns">Return any unused item within 30 days. Print the label from your account and drop it at any branch.</div>
+      </div>
+      <div class="states"><span style="background:#d6336c">Normal</span><span style="background:#e64980">Rollover</span><span style="background:#a61e4d">Click</span><span style="color:var(--muted);padding-left:4px">Keep the built-in state names; style them with object styles.</span></div>
+    </div>
+    <div class="col">
+      <div class="card pairmap">
+        <span class="k">The button</span><span style="color:var(--c-int)">btn_show-</span><mark>faq-answer-03</mark><span style="color:var(--c-int)">_p09</span>
+        <span class="k">The object it controls</span><span style="color:var(--c-copy)">txt_</span><mark>faq-answer-03</mark>
+        <span class="k" style="margin-top:12px">Same descriptor, so the pair is easy to match and QA can check every target exists.</span>
+      </div>
+      <table>
+        <tr><th>Action verbs</th></tr>
+        <tr><td style="font-family:var(--mono);font-size:14px;line-height:1.8">nav · goto · show · hide · toggle · play · pause · open · close · link · submit · reset · print</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 8 MSO + FORMS -->
+<section class="slide" data-title="MSOs and forms">
+  <div class="eyebrow">05 · Multi-state objects &amp; forms</div>
+  <h2>States and fields carry the same logic</h2>
+  <div class="row" style="margin-top:18px">
+    <div class="col">
+      <div class="card">
+        <div class="hint" style="margin-bottom:10px">Multi-state object · click a state</div>
+        <div style="font-family:var(--mono);font-size:18px;margin-bottom:12px">mso_gallery-products</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px" id="msoBtns"></div>
+        <div id="msoView" style="height:150px;border-radius:10px;display:grid;place-items:center;font-family:var(--mono);font-size:15px;color:#1b1d22;transition:background .2s"></div>
+        <p style="font-size:14px;color:var(--muted);margin:12px 0 0">States: <code>s01_bottle</code>, <code>s02_can</code>, <code>s03_box</code>. Switch buttons: <code>btn_goto-state-02_gallery-products</code>.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="hint" style="margin-bottom:10px">Form fields · <code>fld_[type]-[descriptor]</code></div>
+        <table>
+          <tr><th>Type</th><th>Example</th></tr>
+          <tr><td><code>text</code></td><td><code>fld_text-email</code>, <code>fld_text-phone</code></td></tr>
+          <tr><td><code>check</code></td><td><code>fld_check-newsletter</code></td></tr>
+          <tr><td><code>radio</code></td><td><code>fld_radio-size</code> (one name for the group; values <code>small</code>, <code>medium</code>, <code>large</code>)</td></tr>
+          <tr><td><code>combo</code> / <code>list</code></td><td><code>fld_combo-country</code></td></tr>
+          <tr><td><code>sig</code></td><td><code>fld_sig-client</code></td></tr>
+        </table>
+      </div>
+      <div class="card" style="border-color:rgba(255,79,139,.4);background:var(--accent-soft);font-size:15px">Field names become the data keys when a PDF form is submitted. Don't rename them once a form is live.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 ANIMATIONS -->
+<section class="slide" data-title="Animations">
+  <div class="eyebrow">06 · Animations</div>
+  <h2><code style="font-size:32px;background:none;padding:0;color:var(--ink)">anim_[effect]_[subject]_[NN]</code></h2>
+  <p class="lead" style="margin-bottom:16px"><code>NN</code> is the row in the Timing panel, so sorting by name matches play order. Same number means play together.</p>
+  <div class="row">
+    <div class="col" style="flex:none;width:420px">
+      <div class="timing">
+        <div class="bar">Timing</div>
+        <div class="ev">Event: On Page Load</div>
+        <div class="trow" data-t="1">anim_fade-in_hero-title_01</div>
+        <div class="trow" data-t="2">anim_fly-up_hero-subtitle_02</div>
+        <div class="trow grp" data-t="3"><span>anim_fade-in_card-01_03</span><span>anim_fade-in_card-02_03</span></div>
+        <div class="ev">Event: On Button Event</div>
+        <div class="trow">anim_zoom-in_map-detail_btn</div>
+      </div>
+      <div class="ctrl"><button class="btn" id="playAnim">▶ Play page</button><span style="font-size:13px;color:var(--muted)">Effects: fade-in · fly-up · zoom-in · grow · spin · path</span></div>
+      <p style="font-size:13.5px;color:var(--muted);margin:0;line-height:1.45">House presets: <code>house_fade-in_0-5s</code>. Animations play in fixed-layout EPUB and Publish Online, not in interactive PDF.</p>
+    </div>
+    <div class="animstage done" id="animStage">
+      <div class="a-el a1"><div class="t">Spring catalog</div></div>
+      <div class="a-el a2"><div class="s">Twelve new products, ready to ship in March.</div></div>
+      <div class="cards"><div class="c a-el a3">card-01</div><div class="c a-el a4">card-02</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 STYLES -->
+<section class="slide" data-title="Styles">
+  <div class="eyebrow">07 · Styles</div>
+  <h2>Name styles for their role, not their look</h2>
+  <p class="lead" style="margin-bottom:16px"><code>p_body</code>, never <code>minion-10pt-black</code>. Click a style: everything that inherits from it lights up.</p>
+  <div class="row">
+    <div class="col">
+      <div class="tree" id="tree">
+        <div class="tlevel"><button class="node root" data-n="p_base">p_base</button></div>
+        <div class="tlevel"><button class="node" data-n="p_h1">p_h1</button><button class="node" data-n="p_body">p_body</button><button class="node" data-n="p_caption">p_caption</button></div>
+        <div class="tlevel"><button class="node" data-n="p_body-first">p_body-first</button><button class="node" data-n="p_body-inverse">p_body-inverse</button></div>
+        <div class="tlevel"><button class="node" data-n="p_body-first-dropcap">p_body-first-dropcap</button></div>
+      </div>
+      <p id="treeNote" style="font-size:14.5px;color:var(--muted);text-align:center;margin:6px 0 0"></p>
+    </div>
+    <div class="col">
+      <div class="stylegrid">
+        <div class="card"><h4>Paragraph</h4><div class="p">p_</div><div class="ex">p_h1 · p_body-first</div></div>
+        <div class="card"><h4>Character</h4><div class="p">c_</div><div class="ex">c_bold · c_link</div></div>
+        <div class="card"><h4>Object</h4><div class="p">o_</div><div class="ex">o_btn-primary</div></div>
+        <div class="card"><h4>Table</h4><div class="p">t_</div><div class="ex">t_pricing</div></div>
+        <div class="card"><h4>Cell</h4><div class="p">cl_</div><div class="ex">cl_header</div></div>
+        <div class="card"><h4>GREP</h4><div class="p">c_grep-</div><div class="ex">c_grep-currency</div></div>
+      </div>
+      <div class="card" style="font-size:14.5px;line-height:1.5;color:#d3d7de">Group folders: <span class="mono" style="color:var(--ink)">HEAD · BODY · LIST · CAPTION · TABLE · UI · LEGAL</span><br>Variants go last: <code>-first</code> <code>-last</code> <code>-inverse</code> <code>-sm</code> <code>-lg</code></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 SWATCHES -->
+<section class="slide" data-title="Swatches">
+  <div class="eyebrow">07 · Swatches &amp; clean-up</div>
+  <h2><code style="font-size:32px;background:none;padding:0;color:var(--ink)">[role]-[name]_[mode]</code></h2>
+  <p class="lead">Modes: <code>cmyk</code> <code>rgb</code> <code>pms</code> <code>spot</code> <code>hex</code>. Grouped into BRAND, UI, NEUTRALS and DATA-VIZ.</p>
+  <div class="sw" style="margin-bottom:28px">
+    <div style="flex:1"><i style="background:#0b4f9c"></i>brand-primary_cmyk</div>
+    <div style="flex:1"><i style="background:#0072ce"></i>brand-accent_pms-286c</div>
+    <div style="flex:1"><i style="background:#1971c2"></i>ui-link_rgb</div>
+    <div style="flex:1"><i style="background:#e03131"></i>ui-error_rgb</div>
+    <div style="flex:1"><i style="background:#868e96"></i>neutral-gray-60_cmyk</div>
+  </div>
+  <div class="row" style="flex:none">
+    <div class="card col" style="gap:8px"><strong>Don't</strong>
+      <ul class="clean" style="font-size:15.5px"><li>Leave local overrides (the <strong>+</strong> next to a style)</li><li>Use <code>[Basic Paragraph]</code> on live text</li><li>Keep duplicates like <code>Body 2</code></li><li>Hand off unused styles or swatches</li></ul></div>
+    <div class="card col" style="gap:8px"><strong>Do</strong>
+      <ul class="clean" style="font-size:15.5px"><li>Keep the master set in <code>_styles-master.indd</code> or a CC Library</li><li>Load it into every new document</li><li>Choose “Use Incoming Definition” on conflicts</li><li>Set language once, in <code>p_base</code></li></ul></div>
+  </div>
+</section>
+
+<!-- 12 FILES -->
+<section class="slide" data-title="Files">
+  <div class="eyebrow">08 · Files, links &amp; packages</div>
+  <h2>Versions live only in <code style="font-size:34px;background:none;padding:0;color:var(--accent)">vNN</code></h2>
+  <div class="fname">
+    <span><small>Client</small>ACME</span><span style="background:none;color:#59606c">_</span>
+    <span><small>Project</small>Q1-catalog</span><span style="background:none;color:#59606c">_</span>
+    <span><small>Item</small>brochure</span><span style="background:none;color:#59606c">_</span>
+    <span><small>Lang</small>es</span><span style="background:none;color:#59606c">_</span>
+    <span style="color:var(--accent)"><small>Version</small>v03</span><span style="background:none;color:var(--muted)">.indd</span>
+  </div>
+  <div class="row">
+    <div class="tree-files" style="flex:.8"><b>ACME_Q1-catalog/</b>
+├ 01_brief
+├ 02_assets
+│  ├ images   <span style="color:var(--muted)">q1-catalog_p04_product-bottle_v02.psd</span>
+│  ├ logos
+│  └ fonts
+├ 03_indd     <span class="i">…_brochure_es_v03.indd</span>
+├ 04_exports  <span class="e">…_v03_print.pdf · …_v03_interactive.pdf</span>
+└ 05_archive</div>
+    <div class="col">
+      <ul class="clean" style="font-size:16px">
+        <li>Bump <code>vNN</code> for every version sent outside the team. Never <code>final</code>.</li>
+        <li>Approved files keep their name and move to the approved folder. No suffix.</li>
+        <li>Rename links before packaging. <code>IMG_4823.jpg</code> fails QA.</li>
+        <li>Package with fonts, links and IDML; folder is the INDD name + <code>_PKG</code>.</li>
+        <li>Exports: INDD name + output, e.g. <code>_v03_print.pdf</code>, <code>_v03.epub</code>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 13 BUILDER -->
+<section class="slide" data-title="Name builder">
+  <div class="eyebrow">Tool · Name builder &amp; checker</div>
+  <h2>Build a name, or check one</h2>
+  <div class="tool" style="margin-top:14px">
+    <div class="col" style="gap:12px">
+      <div class="fields">
+        <label class="field" for="bType">What are you naming?
+          <select id="bType">
+            <option value="layer">Layer</option><option value="txt">Text frame</option><option value="img">Image frame</option>
+            <option value="grp">Group</option><option value="btn" selected>Button</option><option value="fld">Form field</option>
+            <option value="mso">Multi-state object</option><option value="anim">Animation</option>
+            <option value="p">Paragraph style</option><option value="c">Character style</option><option value="o">Object style</option>
+            <option value="swatch">Swatch</option>
+          </select></label>
+        <div id="bFields" style="display:contents"></div>
+      </div>
+      <div class="field">Your name<div class="out" id="bOut" aria-live="polite"></div></div>
+      <div class="ctrl"><button class="btn" id="bCopy">Copy name</button><button class="btn ghost" id="bCheckIt">Check it →</button><span id="bMsg" style="font-size:13px;color:var(--muted)"></span></div>
+    </div>
+    <div class="col card" style="gap:10px">
+      <label class="field" for="cIn">Paste any layer, object, style or swatch name
+        <input id="cIn" value="Images new" autocomplete="off" spellcheck="false"></label>
+      <div><span class="verdict" id="cVerdict"></span> <span id="cKind" style="font-size:13px;color:var(--muted);margin-left:6px"></span></div>
+      <ul class="checks" id="cList"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 14 QA -->
+<section class="slide" data-title="QA checklist">
+  <div class="eyebrow">09 · Pre-handoff QA</div>
+  <h2>Run this before any file leaves the team</h2>
+  <div class="ctrl" style="margin:6px 0 16px"><div class="progress"><i id="qaBar"></i></div><span id="qaCount" class="mono" style="font-size:13px;color:var(--muted);min-width:60px;text-align:right"></span><button class="btn ghost" id="qaReset" style="padding:6px 12px;font-size:13px">Reset</button></div>
+  <div class="qa" id="qa"></div>
+</section>
+
+<!-- 15 QUICK REF -->
+<section class="slide" data-title="Quick reference">
+  <div class="eyebrow">10 · Quick reference</div>
+  <h2>Everything on one slide</h2>
+  <div class="row" style="margin-top:12px">
+    <table class="qr col" style="display:table">
+      <tr><td>Layer</td><td><code>NN_TYPE_SUFFIX</code></td><td><code>30_COPY_ES</code></td></tr>
+      <tr><td>Object</td><td><code>prefix_descriptor_variant</code></td><td><code>img_hero-team</code></td></tr>
+      <tr><td>Group</td><td><code>grp_descriptor-NN</code></td><td><code>grp_card-pricing-01</code></td></tr>
+      <tr><td>Button</td><td><code>btn_action-target_location</code></td><td><code>btn_nav-next_p04</code></td></tr>
+      <tr><td>Hotspot</td><td><code>hot_descriptor_location</code></td><td><code>hot_map-north_p08</code></td></tr>
+      <tr><td>MSO / state</td><td><code>mso_descriptor / sNN_descriptor</code></td><td><code>mso_gallery / s02_can</code></td></tr>
+      <tr><td>Form field</td><td><code>fld_type-descriptor</code></td><td><code>fld_text-email</code></td></tr>
+      <tr><td>Animation</td><td><code>anim_effect_subject_NN</code></td><td><code>anim_fade-in_hero-title_01</code></td></tr>
+    </table>
+    <table class="qr col" style="display:table">
+      <tr><td>Anim preset</td><td><code>house_effect_duration</code></td><td><code>house_fade-in_0-5s</code></td></tr>
+      <tr><td>Paragraph</td><td><code>p_role-variant</code></td><td><code>p_body-first</code></td></tr>
+      <tr><td>Character</td><td><code>c_role</code></td><td><code>c_link</code></td></tr>
+      <tr><td>Object style</td><td><code>o_kind-role</code></td><td><code>o_btn-primary</code></td></tr>
+      <tr><td>Table / cell</td><td><code>t_role / cl_role</code></td><td><code>t_pricing / cl_header</code></td></tr>
+      <tr><td>Swatch</td><td><code>role-name_mode</code></td><td><code>brand-primary_cmyk</code></td></tr>
+      <tr><td>File</td><td><code>CLIENT_PROJECT_ITEM_LANG_vNN</code></td><td><code>ACME_Q1-catalog_…_v03</code></td></tr>
+      <tr><td>Placeholder</td><td><code>ph_descriptor</code></td><td><code>ph_img-chart-q3</code></td></tr>
+    </table>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:auto" id="legend"></div>
+</section>
+
+</div></div>
+
+<nav id="nav" aria-label="Slides">
+  <span id="slideTitle"></span>
+  <button class="navbtn" id="prev" aria-label="Previous slide">←</button>
+  <div id="dots"></div>
+  <button class="navbtn" id="next" aria-label="Next slide">→</button>
+  <span id="count"></span>
+</nav>
+
+<script>
+(function(){
+  const LAYERS=[
+    {n:"00_NOTES",c:"var(--c-notes)",cn:"Red",print:false,lock:false,hidden:true,what:"Redlines, sticky notes, production comments and review flags.",state:"Hidden and non-printing before export.",who:"Anyone reviewing"},
+    {n:"10_INTERACTIONS",c:"var(--c-int)",cn:"Magenta",print:true,lock:false,what:"Buttons, hotspots, form fields, multi-state objects and hyperlink frames.",state:"Unlocked for the interaction builder. Always on top so clicks register.",who:"Interaction builder"},
+    {n:"20_ANIMATION",c:"var(--c-anim)",cn:"Orange",print:true,lock:false,what:"Objects with an animation applied, so they're easy to find and time.",state:"Unlocked for the interaction builder.",who:"Interaction builder"},
+    {n:"30_COPY_EN",c:"var(--c-copy)",cn:"Blue",print:true,lock:false,sel:true,kids:["txt_hero-title","txt_intro-body","txt_faq-answer-03"],what:"All live text: headlines, body, captions, labels. One copy layer per language.",state:"Unlocked for copy editors and translators.",who:"Copy editors"},
+    {n:"31_COPY_ES",c:"var(--c-copy)",cn:"Blue",print:true,lock:false,hidden:true,what:"The Spanish copy. Same frames and styles as 30_COPY_EN, shown one language at a time.",state:"Hidden while the English version is exported.",who:"Translators"},
+    {n:"40_IMAGES",c:"var(--c-img)",cn:"Green",print:true,lock:true,what:"Placed raster images and linked graphics (.psd, .tif, .jpg, .png, .ai).",state:"Locked after placement. Tick “Suppress Text Wrap When Layer Is Hidden”.",who:"Image retouchers"},
+    {n:"50_GRAPHICS",c:"var(--c-gfx)",cn:"Yellow",print:true,lock:true,what:"Native vector shapes, rules, icons drawn in InDesign and colour blocks.",state:"Locked after approval.",who:"Designers"},
+    {n:"60_BACKGROUND",c:"var(--c-bg)",cn:"Gray",print:true,lock:true,what:"Full-bleed backgrounds, textures and page tints.",state:"Locked. Rarely touched.",who:"Designers"},
+    {n:"90_GUIDES",c:"var(--c-guide)",cn:"Cyan",print:false,lock:true,what:"Ruler guides, grids, safe-area and bleed markers.",state:"Locked and non-printing.",who:"Everyone"}
+  ];
+
+  /* ---------- cover stack ---------- */
+  const cs=document.getElementById('coverStack');
+  const cols=["#868e96","#fab005","#40c057","#339af0","#f08c00","#d6336c"];
+  cols.forEach((c,i)=>{const y=150-i*52;cs.insertAdjacentHTML('beforeend',`<polygon points="-190,${y} 0,${y-95} 190,${y} 0,${y+95}" fill="${c}" fill-opacity="${.45+i*.06}" stroke="${c}" stroke-opacity=".9"/>`)});
+
+  /* ---------- slides & nav ---------- */
+  const slides=[...document.querySelectorAll('.slide')];
+  const dots=document.getElementById('dots');
+  slides.forEach((s,i)=>{const b=document.createElement('button');b.setAttribute('aria-label',`Slide ${i+1}: ${s.dataset.title}`);b.onclick=()=>go(i);dots.appendChild(b)});
+  let cur=0;
+  function go(i){
+    i=Math.max(0,Math.min(slides.length-1,i));
+    slides[cur].classList.remove('active');cur=i;slides[cur].classList.add('active');
+    [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+    document.getElementById('count').textContent=`${cur+1} / ${slides.length}`;
+    document.getElementById('slideTitle').textContent=slides[cur].dataset.title;
+    document.getElementById('prev').disabled=cur===0;document.getElementById('next').disabled=cur===slides.length-1;
+    const h='slide-'+(cur+1); if(location.hash!=='#'+h){try{history.replaceState(null,'','#'+h)}catch(e){location.hash=h}}
+    if(slides[cur].dataset.title==='Animations') play();
+  }
+  document.getElementById('prev').onclick=()=>go(cur-1);
+  document.getElementById('next').onclick=()=>go(cur+1);
+  document.addEventListener('keydown',e=>{
+    if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}
+    if(e.key==='Home')go(0); if(e.key==='End')go(slides.length-1);
+  });
+  function fit(){const v=document.getElementById('viewport');const s=Math.min((v.clientWidth-24)/1280,(v.clientHeight-24)/720);document.getElementById('stage').style.transform=`scale(${Math.max(s,.2)})`}
+  window.addEventListener('resize',fit);fit();
+  function fromHash(){const m=/^#slide-(\d+)$/.exec(location.hash);return m?+m[1]-1:0}
+  window.addEventListener('hashchange',()=>{const i=fromHash();if(i!==cur)go(i)});
+
+  /* ---------- anatomy ---------- */
+  const s2=slides[1];
+  function lightSeg(k){s2.querySelectorAll('[data-k]').forEach(el=>{const on=el.dataset.k===k;el.classList.toggle('on',on);if(el.classList.contains('card'))el.style.borderColor=on?getComputedStyle(el.querySelector('h3')).color:''})}
+  s2.querySelectorAll('.seg').forEach(el=>{el.onmouseenter=el.onfocus=el.onclick=()=>lightSeg(el.dataset.k)});
+  lightSeg('p');
+
+  /* ---------- layers ---------- */
+  const lr=document.getElementById('layerRows'),ld=document.getElementById('layerDetail');
+  function renderLayers(sel){
+    lr.innerHTML='';
+    LAYERS.forEach((L,i)=>{
+      const b=document.createElement('button');b.className='lrow'+(i===sel?' sel':'')+(L.hidden?' hidden':'');b.setAttribute('role','option');b.setAttribute('aria-selected',i===sel);
+      b.innerHTML=`<span class="eye ${L.hidden?'off':''}">${L.hidden?'○':'◉'}</span><span class="lock">${L.lock?'🔒︎':''}</span><span class="chip" style="background:${L.c}"></span><span class="nm">${L.n}</span><span class="tag">${L.print?'':'no print'}</span>`;
+      b.onclick=()=>renderLayers(i);lr.appendChild(b);
+      if(i===sel&&L.kids)L.kids.forEach(k=>lr.insertAdjacentHTML('beforeend',`<div class="lchild">${k}</div>`));
+    });
+    const L=LAYERS[sel];
+    ld.style.borderColor=L.c;
+    ld.innerHTML=`<div class="hint" style="margin-bottom:10px">Layer ${sel+1} of ${LAYERS.length}, front to back</div><h3 style="color:${L.c}">${L.n}</h3>
+      <div class="meta"><span class="pill ${L.print?'ok':'no'}">${L.print?'Prints':'Non-printing'}</span><span class="pill">${L.lock?'Locked':'Unlocked'}</span><span class="pill">Layer colour: ${L.cn}</span><span class="pill">Owner: ${L.who}</span></div>
+      <p><strong>What goes on it.</strong> ${L.what}</p><p><strong>Default state.</strong> ${L.state}</p>`;
+  }
+  renderLayers(3);
+
+  /* ---------- objects ---------- */
+  const s6=slides[5];
+  function lightObj(o){s6.querySelectorAll('[data-o]').forEach(el=>el.classList.toggle('on',el.dataset.o===o))}
+  s6.querySelectorAll('.objitem').forEach(el=>{el.onmouseenter=el.onfocus=el.onclick=()=>lightObj(el.dataset.o)});
+  s6.querySelector('.objlist').onmouseleave=()=>lightObj('img');
+  lightObj('img');
+
+  /* ---------- button demo ---------- */
+  const fb=document.getElementById('faqBtn'),fa=document.getElementById('faqAns');
+  fb.onclick=()=>{const hid=fa.classList.toggle('hide');fb.textContent=hid?'Show':'Hide';fb.setAttribute('aria-expanded',!hid)};
+
+  /* ---------- MSO ---------- */
+  const MSO=[["s01_bottle","#e7f5ff"],["s02_can","#fff4e6"],["s03_box","#ebfbee"]];
+  const mb=document.getElementById('msoBtns'),mv=document.getElementById('msoView');
+  function mso(i){mv.style.background=MSO[i][1];mv.textContent=`state ${MSO[i][0]}`;[...mb.children].forEach((b,k)=>{b.className='btn '+(k===i?'':'ghost')})}
+  MSO.forEach((m,i)=>{const b=document.createElement('button');b.textContent=m[0];b.style.fontFamily='var(--mono)';b.style.fontSize='13px';b.onclick=()=>mso(i);mb.appendChild(b)});
+  mso(1);
+
+  /* ---------- animation ---------- */
+  const st=document.getElementById('animStage');let timers=[];
+  function play(){
+    timers.forEach(clearTimeout);timers=[];
+    st.classList.remove('play','done');void st.offsetWidth;st.classList.add('play');
+    const rows=slides[8].querySelectorAll('.trow[data-t]');
+    rows.forEach(r=>r.classList.remove('on'));
+    [1,2,3].forEach((t,i)=>timers.push(setTimeout(()=>{rows.forEach(r=>r.classList.toggle('on',+r.dataset.t===t))},i*500)));
+    timers.push(setTimeout(()=>{rows.forEach(r=>r.classList.remove('on'));st.classList.remove('play');st.classList.add('done')},1900));
+  }
+  document.getElementById('playAnim').onclick=play;
+
+  /* ---------- styles tree ---------- */
+  const TREE={"p_base":["p_h1","p_body","p_caption","p_body-first","p_body-inverse","p_body-first-dropcap"],"p_body":["p_body-first","p_body-inverse","p_body-first-dropcap"],"p_body-first":["p_body-first-dropcap"]};
+  const NOTES={"p_base":"Change the font here and every paragraph style follows.","p_body":"Edit p_body and its three variants update with it.","p_body-first":"Adds only “no first-line indent”. The drop cap version inherits that.","p_body-first-dropcap":"Leaf style: changes affect only this style.","p_h1":"Headings inherit language and colour from p_base.","p_caption":"Captions inherit from p_base only.","p_body-inverse":"Light text for dark backgrounds; everything else comes from p_body."};
+  const nodes=[...document.querySelectorAll('#tree .node')];
+  function lightTree(n){const set=new Set([n,...(TREE[n]||[])]);nodes.forEach(x=>x.classList.toggle('lit',set.has(x.dataset.n)));document.getElementById('treeNote').textContent=NOTES[n]}
+  nodes.forEach(x=>x.onclick=()=>lightTree(x.dataset.n));
+  lightTree('p_body');
+
+  /* ---------- builder ---------- */
+  const slug=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  const pad=s=>{s=(s||'').replace(/\D/g,'');return s?s.padStart(2,'0'):''};
+  const F={
+    layer:[["num","Order (steps of 10)","30","sel:00,10,20,30,31,35,40,41,50,55,60,90"],["type","Content type","COPY","sel:NOTES,INTERACTIONS,ANIMATION,COPY,COPY-LEGAL,IMAGES,GRAPHICS,BACKGROUND,GUIDES"],["suf","Suffix (optional)","","sel:,EN,ES,PRINT,DIGITAL"]],
+    txt:[["d","Descriptor","faq answer 3"],["v","Variant / index (optional)",""]],
+    img:[["d","Descriptor","product bottle front"],["v","Variant (optional)",""]],
+    grp:[["d","Descriptor","card pricing"],["n","Index","1"]],
+    btn:[["a","Action","show","sel:nav,goto,show,hide,toggle,play,pause,open,close,link,submit,reset,print"],["t","Target","faq answer 03"],["l","Page number or section","9"]],
+    fld:[["t","Field type","text","sel:text,check,radio,combo,list,sig"],["d","Descriptor","email"]],
+    mso:[["d","Descriptor","gallery products"]],
+    anim:[["e","Effect","fade-in","sel:fade-in,fade-out,fly-left,fly-up,zoom-in,grow,spin,path"],["s","Subject","hero title"],["n","Order in Timing panel","1"],["tr","Trigger","","sel:,click,roll,btn"]],
+    p:[["r","Role","body","sel:base,h1,h2,h3,body,list-bullet-l1,caption,ui-button-label"],["v","Variant (optional)","first","sel:,first,last,centered,inverse,sm,lg"]],
+    c:[["r","Role","link","sel:bold,italic,link,superscript,price,grep-currency,grep-nobreak"]],
+    o:[["k","Kind","btn","sel:txt,img,btn,shp"],["r","Role","primary"],["st","State (buttons)","","sel:,rollover,click"]],
+    swatch:[["r","Role","brand","sel:brand,ui,neutral,tint,data"],["n","Name","primary"],["m","Mode","cmyk","sel:cmyk,rgb,pms,spot,hex"]]
+  };
+  const bt=document.getElementById('bType'),bf=document.getElementById('bFields'),bo=document.getElementById('bOut');
+  function drawFields(){
+    bf.innerHTML='';
+    F[bt.value].forEach(([id,label,def,sel])=>{
+      const lab=document.createElement('label');lab.className='field';lab.htmlFor='bf_'+id;lab.textContent=label;
+      let el;
+      if(sel){el=document.createElement('select');sel.slice(4).split(',').forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o||'(none)';el.appendChild(op)});el.value=def}
+      else{el=document.createElement('input');el.value=def;el.autocomplete='off';el.spellcheck=false}
+      el.id='bf_'+id;el.oninput=el.onchange=build;lab.appendChild(el);bf.appendChild(lab);
+    });build();
+  }
+  const v=id=>{const e=document.getElementById('bf_'+id);return e?e.value:''};
+  function loc(x){x=x.trim();if(!x)return'';if(/^\d+$/.test(x))return'p'+pad(x);return slug(x).startsWith('sec-')?slug(x):'sec-'+slug(x)}
+  function build(){
+    let n='';const t=bt.value;
+    if(t==='layer')n=`${v('num')}_${v('type')}${v('suf')?'_'+v('suf'):''}`;
+    else if(t==='txt'||t==='img')n=`${t}_${slug(v('d'))}${v('v')?'_'+slug(v('v')):''}`;
+    else if(t==='grp')n=`grp_${slug(v('d'))}${pad(v('n'))?'-'+pad(v('n')):''}`;
+    else if(t==='btn')n=`btn_${v('a')}-${slug(v('t'))}${loc(v('l'))?'_'+loc(v('l')):''}`;
+    else if(t==='fld')n=`fld_${v('t')}-${slug(v('d'))}`;
+    else if(t==='mso')n=`mso_${slug(v('d'))}`;
+    else if(t==='anim')n=`anim_${v('e')}_${slug(v('s'))}_${v('tr')||pad(v('n'))||'01'}`;
+    else if(t==='p')n=`p_${v('r')}${v('v')?'-'+v('v'):''}`;
+    else if(t==='c')n=`c_${v('r')}`;
+    else if(t==='o')n=`o_${v('k')}-${slug(v('r'))}${v('st')?'-'+v('st'):''}`;
+    else if(t==='swatch')n=`${v('r')}-${slug(v('n'))}_${v('m')}`;
+    bo.textContent=n;
+  }
+  bt.onchange=drawFields;drawFields();
+  const msg=document.getElementById('bMsg');
+  document.getElementById('bCopy').onclick=async()=>{try{await navigator.clipboard.writeText(bo.textContent);msg.textContent='Copied.'}catch(e){msg.textContent='Copy blocked here. Select the name and copy it by hand.'}setTimeout(()=>msg.textContent='',2500)};
+  document.getElementById('bCheckIt').onclick=()=>{ci.value=bo.textContent;check()};
+
+  /* ---------- checker ---------- */
+  const ci=document.getElementById('cIn'),cl=document.getElementById('cList'),cv=document.getElementById('cVerdict'),ck=document.getElementById('cKind');
+  const PFX={txt:"Text frame",img:"Image frame",shp:"Shape",grp:"Group",btn:"Button",hot:"Hotspot",fld:"Form field",mso:"Multi-state object",anim:"Animation",vid:"Video",aud:"Audio",ph:"Placeholder",p:"Paragraph style",c:"Character style",o:"Object style",t:"Table style",cl:"Cell style",house:"Animation preset"};
+  const SW=["brand","ui","neutral","tint","data"];
+  const BANNED=["final","new","copy","test","old","temp","tmp","nuevo","final2"];
+  function check(){
+    const s=ci.value.trim();const rows=[];
+    const add=(ok,txt)=>rows.push([ok,txt]);
+    if(!s){cl.innerHTML='';cv.textContent='';ck.textContent='Type a name to check it.';return}
+    const isLayer=/^\d/.test(s)||/^[A-Z]/.test(s)&&s===s.toUpperCase();
+    if(isLayer){
+      ck.textContent='Checked as a layer name';
+      add(/^\d{2}_/.test(s),'Starts with a two-digit order number and an underscore (30_)');
+      add(/^\d{2}_[A-Z]+(-[A-Z]+)*(_[A-Z]+)?$/.test(s),'Pattern NN_TYPE or NN_TYPE_SUFFIX, UPPERCASE, hyphens inside the type');
+      add(!/\s/.test(s),'No spaces');
+      add(!/^Layer \d/i.test(s),'Not the default “Layer 1”');
+    }else{
+      const pre=s.split('_')[0];const isSw=SW.some(r=>pre.startsWith(r+'-'));
+      ck.textContent=isSw?'Checked as a swatch':(PFX[pre]?`Checked as: ${PFX[pre]}`:'Checked as an object or style name');
+      add(s===s.toLowerCase(),'All lowercase');
+      add(!/\s/.test(s),'No spaces');
+      add(/^[a-z0-9_-]*$/i.test(s),'Only letters a–z, digits, _ and - (no accents or symbols)');
+      add(/^[a-z]/i.test(s),'Starts with a letter');
+      if(isSw)add(/_(cmyk|rgb|pms(-[a-z0-9]+)?|spot|hex)$/.test(s),'Ends with a colour mode: _cmyk, _rgb, _pms, _spot or _hex');
+      else add(!!PFX[pre]&&s.includes('_'),'Starts with a known prefix (txt_, img_, btn_, anim_, p_ …)');
+      add(!s.split(/[\s_-]+/).some(w=>BANNED.includes(w.toLowerCase())),'No temporary words (final, new, copy, test, old)');
+      add(!/(^|[_-])\d(?![\d])/.test(s.replace(/^[a-z]+_/,'_').replace(/_p\d+$|p\d{2,}/,'')) ,'Numbers are zero-padded (01, not 1)');
+      if(pre==='btn')add(/^btn_[a-z]+-[a-z0-9-]+(_(p\d{2,}|sec-[a-z0-9-]+))?$/.test(s),'Button pattern btn_action-target_location');
+      if(pre==='anim')add(/^anim_[a-z-]+_[a-z0-9-]+_(\d{2}|click|roll|btn)$/.test(s),'Animation pattern anim_effect_subject_NN');
+    }
+    add(s.length<=30,`Under 30 characters (${s.length})`);
+    const bad=rows.filter(r=>!r[0]).length;
+    cv.className='verdict '+(bad?'no':'ok');cv.textContent=bad?`${bad} issue${bad>1?'s':''}`:'Follows the convention';
+    cl.innerHTML=rows.map(([ok,t])=>`<li class="${ok?'pass':'fail'}"><span class="s">${ok?'✓':'✕'}</span><span>${t}</span></li>`).join('');
+  }
+  ci.oninput=check;check();
+
+  /* ---------- QA ---------- */
+  const QA=["Layers match the standard set and order; no <code>Layer 1</code>","<code>00_NOTES</code> hidden and non-printing; <code>90_GUIDES</code> locked","Interactive, animated and grouped objects named with the right prefix","Search the Layers panel for <code>ph_</code>: no placeholders left","Every button's target exists and descriptors match","Timing panel order matches the <code>NN</code> in animation names","No local style overrides (+), no <code>[Basic Paragraph]</code> on live text","Unused styles and swatches deleted","No missing or modified links; links renamed","Preflight panel shows no errors","File, export and package names follow <code>CLIENT_PROJECT_ITEM_LANG_vNN</code>"];
+  const qa=document.getElementById('qa');let saved=[];try{saved=JSON.parse(localStorage.getItem('indd-qa')||'[]')}catch(e){}
+  QA.forEach((q,i)=>qa.insertAdjacentHTML('beforeend',`<label for="qa${i}"><input type="checkbox" id="qa${i}" ${saved[i]?'checked':''}><span>${q}</span></label>`));
+  function qaUpd(){const b=[...qa.querySelectorAll('input')].map(x=>x.checked);const n=b.filter(Boolean).length;document.getElementById('qaBar').style.width=(n/QA.length*100)+'%';document.getElementById('qaCount').textContent=`${n} / ${QA.length}`;try{localStorage.setItem('indd-qa',JSON.stringify(b))}catch(e){}}
+  qa.onchange=qaUpd;document.getElementById('qaReset').onclick=()=>{qa.querySelectorAll('input').forEach(x=>x.checked=false);qaUpd()};qaUpd();
+
+  /* ---------- legend ---------- */
+  document.getElementById('legend').innerHTML=LAYERS.filter(l=>l.n!=='31_COPY_ES').map(l=>`<div style="flex:1;font-family:var(--mono);font-size:11px;color:var(--muted)"><i style="display:block;height:8px;border-radius:4px;background:${l.c};margin-bottom:5px"></i>${l.n.replace('_EN','')}</div>`).join('');
+
+  slides[0].classList.add('active');go(fromHash());
+})();
+</script>
+</body>
+</html>
