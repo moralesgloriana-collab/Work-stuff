@@ -147,13 +147,17 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
 .animstage.done .a-el{opacity:1}
 @keyframes fadeIn{to{opacity:1}}
 @keyframes flyUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+.lyr{font-family:var(--display);font-size:10.5px;color:var(--lc);border:1px solid var(--lc);border-radius:99px;padding:0 7px;margin-left:6px;opacity:.9}
+.wipe{height:6px;border-radius:3px;background:linear-gradient(90deg,#f08c00,#fab005);margin-top:10px;width:220px;transform-origin:left}
+.animstage.play .a2.wipe{animation:wipe .5s ease .5s forwards}
+@keyframes wipe{from{opacity:1;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
 .animstage .t{font-size:34px;font-weight:700;letter-spacing:-.01em}
 .animstage .s{font-size:16px;color:#495057;margin-top:6px}
 .animstage .cards{display:flex;gap:14px;margin-top:26px}
 .animstage .c{flex:1;height:96px;border-radius:10px;background:#fff4e6;border:2px solid #ffc078;padding:12px;font-size:12px;font-family:var(--mono);color:#d9480f}
 .animstage .tag{position:absolute;font-family:var(--mono);font-size:11px;color:#d9480f;background:#fff4e6;padding:2px 6px;border-radius:4px}
 .ctrl{display:flex;gap:10px;align-items:center}
-.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;flex:none}
 .btn.ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--ink)}
 .btn:hover{filter:brightness(1.1)}
 
@@ -273,8 +277,9 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
         <div class="pfx"><code>shp_</code>Shape, rule</div><div class="pfx"><code>grp_</code>Group</div>
         <div class="pfx"><code>btn_</code>Button</div><div class="pfx"><code>hot_</code>Hotspot</div>
         <div class="pfx"><code>fld_</code>Form field</div><div class="pfx"><code>mso_</code>Multi-state</div>
-        <div class="pfx"><code>anim_</code>Animation</div><div class="pfx"><code>vid_</code>Video</div>
+        <div class="pfx"><code>anim_</code>Motion-only</div><div class="pfx"><code>vid_</code>Video</div>
         <div class="pfx"><code>aud_</code>Audio</div><div class="pfx"><code>ph_</code>Placeholder</div>
+        <div class="pfx" style="grid-column:span 2"><code>_animNN</code>Suffix for animated content</div>
       </div>
     </div>
   </div>
@@ -406,26 +411,27 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
 <!-- 9 ANIMATIONS -->
 <section class="slide" data-title="Animations">
   <div class="eyebrow">06 · Animations</div>
-  <h2><code style="font-size:32px;background:none;padding:0;color:var(--ink)">anim_[effect]_[subject]_[NN]</code></h2>
-  <p class="lead" style="margin-bottom:16px"><code>NN</code> is the row in the Timing panel, so sorting by name matches play order. Same number means play together.</p>
+  <h2>Animated content keeps its name and its layer</h2>
+  <p class="lead" style="margin-bottom:14px">Add <code>_animNN</code> to the content name. <code>NN</code> is the Timing panel row; same number means play together. Only motion-only objects get <code>anim_</code> and the <code>20_ANIMATION</code> layer.</p>
   <div class="row">
-    <div class="col" style="flex:none;width:420px">
-      <div class="timing">
+    <div class="col" style="flex:none;width:450px;gap:10px">
+      <div class="timing" style="width:450px">
         <div class="bar">Timing</div>
         <div class="ev">Event: On Page Load</div>
-        <div class="trow" data-t="1">anim_fade-in_hero-title_01</div>
-        <div class="trow" data-t="2">anim_fly-up_hero-subtitle_02</div>
-        <div class="trow grp" data-t="3"><span>anim_fade-in_card-01_03</span><span>anim_fade-in_card-02_03</span></div>
+        <div class="trow" data-t="1">txt_hero-title_anim01 <span class="lyr" style="--lc:var(--c-copy)">30_COPY_EN</span></div>
+        <div class="trow" data-t="2">anim_wipe-reveal_02 <span class="lyr" style="--lc:var(--c-anim)">20_ANIMATION</span></div>
+        <div class="trow grp" data-t="3"><span>img_card-01_anim03 <span class="lyr" style="--lc:var(--c-img)">40_IMAGES</span></span><span>img_card-02_anim03 <span class="lyr" style="--lc:var(--c-img)">40_IMAGES</span></span></div>
         <div class="ev">Event: On Button Event</div>
-        <div class="trow">anim_zoom-in_map-detail_btn</div>
+        <div class="trow">txt_map-detail_anim-btn <span class="lyr" style="--lc:var(--c-copy)">30_COPY_EN</span></div>
       </div>
-      <div class="ctrl"><button class="btn" id="playAnim">▶ Play page</button><span style="font-size:13px;color:var(--muted)">Effects: fade-in · fly-up · zoom-in · grow · spin · path</span></div>
-      <p style="font-size:13.5px;color:var(--muted);margin:0;line-height:1.45">House presets: <code>house_fade-in_0-5s</code>. Animations play in fixed-layout EPUB and Publish Online, not in interactive PDF.</p>
+      <div class="ctrl"><button class="btn" id="playAnim">▶ Play page</button><span style="font-size:13px;color:var(--muted)">Test: would the object be pointless without its animation? Then it's motion-only.</span></div>
+      <p style="font-size:13px;color:var(--muted);margin:0;line-height:1.45">Don't group across layers to animate together; give items the same <code>NN</code>. Animations don't play in interactive PDF.</p>
     </div>
     <div class="animstage done" id="animStage">
       <div class="a-el a1"><div class="t">Spring catalog</div></div>
-      <div class="a-el a2"><div class="s">Twelve new products, ready to ship in March.</div></div>
-      <div class="cards"><div class="c a-el a3">card-01</div><div class="c a-el a4">card-02</div></div>
+      <div class="wipe a-el a2"></div>
+      <div class="s" style="margin-top:6px">Twelve new products, ready to ship in March.</div>
+      <div class="cards"><div class="c a-el a3">img_card-01</div><div class="c a-el a4">img_card-02</div></div>
     </div>
   </div>
 </section>
@@ -523,7 +529,7 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
           <select id="bType">
             <option value="layer">Layer</option><option value="txt">Text frame</option><option value="img">Image frame</option>
             <option value="grp">Group</option><option value="btn" selected>Button</option><option value="fld">Form field</option>
-            <option value="mso">Multi-state object</option><option value="anim">Animation</option>
+            <option value="mso">Multi-state object</option><option value="anim">Animated object</option>
             <option value="p">Paragraph style</option><option value="c">Character style</option><option value="o">Object style</option>
             <option value="swatch">Swatch</option>
           </select></label>
@@ -562,7 +568,8 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
       <tr><td>Hotspot</td><td><code>hot_descriptor_location</code></td><td><code>hot_map-north_p08</code></td></tr>
       <tr><td>MSO / state</td><td><code>mso_descriptor / sNN_descriptor</code></td><td><code>mso_gallery / s02_can</code></td></tr>
       <tr><td>Form field</td><td><code>fld_type-descriptor</code></td><td><code>fld_text-email</code></td></tr>
-      <tr><td>Animation</td><td><code>anim_effect_subject_NN</code></td><td><code>anim_fade-in_hero-title_01</code></td></tr>
+      <tr><td>Animated</td><td><code>prefix_descriptor_animNN</code></td><td><code>txt_hero-title_anim01</code></td></tr>
+      <tr><td>Motion-only</td><td><code>anim_descriptor_NN</code></td><td><code>anim_wipe-reveal_01</code></td></tr>
     </table>
     <table class="qr col" style="display:table">
       <tr><td>Anim preset</td><td><code>house_effect_duration</code></td><td><code>house_fade-in_0-5s</code></td></tr>
@@ -572,7 +579,7 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
       <tr><td>Table / cell</td><td><code>t_role / cl_role</code></td><td><code>t_pricing / cl_header</code></td></tr>
       <tr><td>Swatch</td><td><code>role-name_mode</code></td><td><code>brand-primary_cmyk</code></td></tr>
       <tr><td>File</td><td><code>CLIENT_PROJECT_ITEM_LANG_vNN</code></td><td><code>ACME_Q1-catalog_…_v03</code></td></tr>
-      <tr><td>Placeholder</td><td><code>ph_descriptor</code></td><td><code>ph_img-chart-q3</code></td></tr>
+      
     </table>
   </div>
   <div style="display:flex;gap:8px;margin-top:auto" id="legend"></div>
@@ -593,10 +600,10 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
   const LAYERS=[
     {n:"00_NOTES",c:"var(--c-notes)",cn:"Red",print:false,lock:false,hidden:true,what:"Redlines, sticky notes, production comments and review flags.",state:"Hidden and non-printing before export.",who:"Anyone reviewing"},
     {n:"10_INTERACTIONS",c:"var(--c-int)",cn:"Magenta",print:true,lock:false,what:"Buttons, hotspots, form fields, multi-state objects and hyperlink frames.",state:"Unlocked for the interaction builder. Always on top so clicks register.",who:"Interaction builder"},
-    {n:"20_ANIMATION",c:"var(--c-anim)",cn:"Orange",print:true,lock:false,what:"Objects with an animation applied, so they're easy to find and time.",state:"Unlocked for the interaction builder.",who:"Interaction builder"},
-    {n:"30_COPY_EN",c:"var(--c-copy)",cn:"Blue",print:true,lock:false,sel:true,kids:["txt_hero-title","txt_intro-body","txt_faq-answer-03"],what:"All live text: headlines, body, captions, labels. One copy layer per language.",state:"Unlocked for copy editors and translators.",who:"Copy editors"},
+    {n:"20_ANIMATION",c:"var(--c-anim)",cn:"Orange",print:true,lock:false,what:"Motion-only objects: wipes, reveals, masks, decorative motion. Animated copy and images stay on their own layers.",state:"Unlocked for the interaction builder.",who:"Interaction builder"},
+    {n:"30_COPY_EN",c:"var(--c-copy)",cn:"Blue",print:true,lock:false,sel:true,kids:["txt_hero-title_anim01","txt_intro-body","txt_faq-answer-03"],what:"All live text, including animated text (txt_hero-title_anim01). One copy layer per language.",state:"Unlocked for copy editors and translators.",who:"Copy editors"},
     {n:"31_COPY_ES",c:"var(--c-copy)",cn:"Blue",print:true,lock:false,hidden:true,what:"The Spanish copy. Same frames and styles as 30_COPY_EN, shown one language at a time.",state:"Hidden while the English version is exported.",who:"Translators"},
-    {n:"40_IMAGES",c:"var(--c-img)",cn:"Green",print:true,lock:true,what:"Placed raster images and linked graphics (.psd, .tif, .jpg, .png, .ai).",state:"Locked after placement. Tick “Suppress Text Wrap When Layer Is Hidden”.",who:"Image retouchers"},
+    {n:"40_IMAGES",c:"var(--c-img)",cn:"Green",print:true,lock:true,what:"Placed raster images and linked graphics, including animated ones (img_card-01_anim03).",state:"Locked after placement. Tick “Suppress Text Wrap When Layer Is Hidden”.",who:"Image retouchers"},
     {n:"50_GRAPHICS",c:"var(--c-gfx)",cn:"Yellow",print:true,lock:true,what:"Native vector shapes, rules, icons drawn in InDesign and colour blocks.",state:"Locked after approval.",who:"Designers"},
     {n:"60_BACKGROUND",c:"var(--c-bg)",cn:"Gray",print:true,lock:true,what:"Full-bleed backgrounds, textures and page tints.",state:"Locked. Rarely touched.",who:"Designers"},
     {n:"90_GUIDES",c:"var(--c-guide)",cn:"Cyan",print:false,lock:true,what:"Ruler guides, grids, safe-area and bleed markers.",state:"Locked and non-printing.",who:"Everyone"}
@@ -708,7 +715,7 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
     btn:[["a","Action","show","sel:nav,goto,show,hide,toggle,play,pause,open,close,link,submit,reset,print"],["t","Target","faq answer 03"],["l","Page number or section","9"]],
     fld:[["t","Field type","text","sel:text,check,radio,combo,list,sig"],["d","Descriptor","email"]],
     mso:[["d","Descriptor","gallery products"]],
-    anim:[["e","Effect","fade-in","sel:fade-in,fade-out,fly-left,fly-up,zoom-in,grow,spin,path"],["s","Subject","hero title"],["n","Order in Timing panel","1"],["tr","Trigger","","sel:,click,roll,btn"]],
+    anim:[["k","What is animated?","txt","sel:txt,img,shp,grp,motion-only"],["s","Descriptor","hero title"],["n","Order in Timing panel","1"],["tr","Trigger (if not on page load)","","sel:,click,roll,btn"]],
     p:[["r","Role","body","sel:base,h1,h2,h3,body,list-bullet-l1,caption,ui-button-label"],["v","Variant (optional)","first","sel:,first,last,centered,inverse,sm,lg"]],
     c:[["r","Role","link","sel:bold,italic,link,superscript,price,grep-currency,grep-nobreak"]],
     o:[["k","Kind","btn","sel:txt,img,btn,shp"],["r","Role","primary"],["st","State (buttons)","","sel:,rollover,click"]],
@@ -735,7 +742,7 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
     else if(t==='btn')n=`btn_${v('a')}-${slug(v('t'))}${loc(v('l'))?'_'+loc(v('l')):''}`;
     else if(t==='fld')n=`fld_${v('t')}-${slug(v('d'))}`;
     else if(t==='mso')n=`mso_${slug(v('d'))}`;
-    else if(t==='anim')n=`anim_${v('e')}_${slug(v('s'))}_${v('tr')||pad(v('n'))||'01'}`;
+    else if(t==='anim'){const k=v('k'),o=pad(v('n'))||'01';n=k==='motion-only'?`anim_${slug(v('s'))}_${o}`:`${k}_${slug(v('s'))}_anim${v('tr')?'-'+v('tr'):o}`;}
     else if(t==='p')n=`p_${v('r')}${v('v')?'-'+v('v'):''}`;
     else if(t==='c')n=`c_${v('r')}`;
     else if(t==='o')n=`o_${v('k')}-${slug(v('r'))}${v('st')?'-'+v('st'):''}`;
@@ -749,7 +756,7 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
 
   /* ---------- checker ---------- */
   const ci=document.getElementById('cIn'),cl=document.getElementById('cList'),cv=document.getElementById('cVerdict'),ck=document.getElementById('cKind');
-  const PFX={txt:"Text frame",img:"Image frame",shp:"Shape",grp:"Group",btn:"Button",hot:"Hotspot",fld:"Form field",mso:"Multi-state object",anim:"Animation",vid:"Video",aud:"Audio",ph:"Placeholder",p:"Paragraph style",c:"Character style",o:"Object style",t:"Table style",cl:"Cell style",house:"Animation preset"};
+  const PFX={txt:"Text frame",img:"Image frame",shp:"Shape",grp:"Group",btn:"Button",hot:"Hotspot",fld:"Form field",mso:"Multi-state object",anim:"Motion-only object",vid:"Video",aud:"Audio",ph:"Placeholder",p:"Paragraph style",c:"Character style",o:"Object style",t:"Table style",cl:"Cell style",house:"Animation preset"};
   const SW=["brand","ui","neutral","tint","data"];
   const BANNED=["final","new","copy","test","old","temp","tmp","nuevo","final2"];
   function check(){
@@ -775,7 +782,8 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
       add(!s.split(/[\s_-]+/).some(w=>BANNED.includes(w.toLowerCase())),'No temporary words (final, new, copy, test, old)');
       add(!/(^|[_-])\d(?![\d])/.test(s.replace(/^[a-z]+_/,'_').replace(/_p\d+$|p\d{2,}/,'')) ,'Numbers are zero-padded (01, not 1)');
       if(pre==='btn')add(/^btn_[a-z]+-[a-z0-9-]+(_(p\d{2,}|sec-[a-z0-9-]+))?$/.test(s),'Button pattern btn_action-target_location');
-      if(pre==='anim')add(/^anim_[a-z-]+_[a-z0-9-]+_(\d{2}|click|roll|btn)$/.test(s),'Animation pattern anim_effect_subject_NN');
+      if(pre==='anim')add(/^anim_[a-z0-9-]+_\d{2}$/.test(s),'Motion-only pattern anim_descriptor_NN (animated copy or images use a _animNN suffix instead)');
+      if(/_anim/.test(s)&&pre!=='anim')add(/_anim(\d{2}|-click|-roll|-btn)$/.test(s),'Animation suffix at the end: _anim01 or _anim-click / -roll / -btn');
     }
     add(s.length<=30,`Under 30 characters (${s.length})`);
     const bad=rows.filter(r=>!r[0]).length;
@@ -785,7 +793,7 @@ td{padding:7px 10px;border-bottom:1px solid #2a2f38;vertical-align:top}
   ci.oninput=check;check();
 
   /* ---------- QA ---------- */
-  const QA=["Layers match the standard set and order; no <code>Layer 1</code>","<code>00_NOTES</code> hidden and non-printing; <code>90_GUIDES</code> locked","Interactive, animated and grouped objects named with the right prefix","Search the Layers panel for <code>ph_</code>: no placeholders left","Every button's target exists and descriptors match","Timing panel order matches the <code>NN</code> in animation names","No local style overrides (+), no <code>[Basic Paragraph]</code> on live text","Unused styles and swatches deleted","No missing or modified links; links renamed","Preflight panel shows no errors","File, export and package names follow <code>CLIENT_PROJECT_ITEM_LANG_vNN</code>"];
+  const QA=["Layers match the standard set and order; no <code>Layer 1</code>","<code>00_NOTES</code> hidden and non-printing; <code>90_GUIDES</code> locked","Interactive, animated and grouped objects named with the right prefix","Search the Layers panel for <code>ph_</code>: no placeholders left","Every button's target exists and descriptors match","Timing panel order matches the <code>_animNN</code> suffixes","Animated copy and images still on their content layers","No local style overrides (+), no <code>[Basic Paragraph]</code> on live text","Unused styles and swatches deleted","No missing or modified links; links renamed","Preflight panel shows no errors","File, export and package names follow <code>CLIENT_PROJECT_ITEM_LANG_vNN</code>"];
   const qa=document.getElementById('qa');let saved=[];try{saved=JSON.parse(localStorage.getItem('indd-qa')||'[]')}catch(e){}
   QA.forEach((q,i)=>qa.insertAdjacentHTML('beforeend',`<label for="qa${i}"><input type="checkbox" id="qa${i}" ${saved[i]?'checked':''}><span>${q}</span></label>`));
   function qaUpd(){const b=[...qa.querySelectorAll('input')].map(x=>x.checked);const n=b.filter(Boolean).length;document.getElementById('qaBar').style.width=(n/QA.length*100)+'%';document.getElementById('qaCount').textContent=`${n} / ${QA.length}`;try{localStorage.setItem('indd-qa',JSON.stringify(b))}catch(e){}}
